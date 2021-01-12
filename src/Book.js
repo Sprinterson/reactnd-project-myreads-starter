@@ -2,6 +2,10 @@ import React, { Component } from 'react'
 import Changer from './Changer';
 
 class Book extends Component {
+	state = {
+		bookState: []
+	}
+
     render() {
         return (
             <li>
