@@ -18,10 +18,10 @@ class BooksApp extends React.Component {
 					books
 				}))
 			})
-		console.log(this.state.books)
 	}
 
 	render() {
+		console.log(this.state.books);
 		return (
 			<BrowserRouter>
 				<div className="app">
@@ -52,7 +52,9 @@ class BooksApp extends React.Component {
 					)} />
 
 					<Route path='/search' render={() => (
-						<Search />
+						<Search 
+							books={this.state.books}
+						/>
 					)} />
 				</div>
 			</BrowserRouter>
