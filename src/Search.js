@@ -56,6 +56,7 @@ class Search extends Component {
                             <Book
                                 key={book.id}
                                 book={book}
+                                bookUpdateShelf={this.props.bookUpdateShelf}
                             />
                         ))}
                     </ol>

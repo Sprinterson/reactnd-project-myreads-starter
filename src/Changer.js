@@ -1,27 +1,47 @@
 import React, { Component } from 'react'
+import { v4 as uuidv4 } from 'uuid';
+
+const options = [
+    { value: 'currentlyReading', label: 'Currently Reading' },
+    { value: 'wantToRead', label: 'Want to Read' },
+    { value: 'read', label: 'Read' },
+    { value: 'none', label: 'None' }
+]
 
 class Changer extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            bookState: "Read",
-        };
-      }
+    state = {
+        shelf: this.props.book.shelf,
+    }
 
-      handleChange = (e) => {
-        this.setState({ bookState: e.target.value })
+    handleChange = (e) => {
+        e.preventDefault()
+        const { book } = this.props
+        const updatedBook = book
+
+        const shelf = e.target.value
+
+        if (this.props.bookUpdateShelf) {
+            this.props.bookUpdateShelf(updatedBook, shelf)
+        }
     }
 
     render() {
-        console.log(this.state.bookState)
+        const { shelf } = this.state
+
         return (
             <div className="book-shelf-changer">
-                <select value={this.state.bookState} onChange={this.handleChange}>
+                <select
+                    value={shelf}
+                    onChange={this.handleChange}
+                >
                     <option value="move" disabled>Move to...</option>
-                    <option value="currentlyReading">Currently Reading</option>
-                    <option value="wantToRead">Want to Read</option>
-                    <option value="read">Read</option>
-                    <option value="none">None</option>
+                    {options.map((option) => (
+                        <option
+                            key={uuidv4()}
+                            value={option.value}
+                        >{option.label}
+                        </option>
+                    ))}
                 </select>
             </div>
         )

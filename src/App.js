@@ -1,6 +1,6 @@
 import React from 'react'
-import { BrowserRouter } from 'react-router-dom'
-import { Route, Link } from 'react-router-dom'
+import { Route, Link, BrowserRouter } from 'react-router-dom'
+import { v4 as uuidv4 } from 'uuid';
 import * as BooksAPI from './BooksAPI'
 import './App.css'
 import Search from './Search'
@@ -18,10 +18,32 @@ class BooksApp extends React.Component {
 					books
 				}))
 			})
+
+			console.log("Component Did Mount")
 	}
 
+	bookUpdateShelf = (updatedBook, shelf) => {
+		const bookToUpdate = this.state.books.find(book => book.id === updatedBook.id)
+		bookToUpdate.shelf = shelf
+
+        this.setState(prevState => (
+            prevState.books.map(book => {
+                return book.id === updatedBook.id ? bookToUpdate : book
+            })
+		))
+		
+		BooksAPI.update(updatedBook, shelf)
+    }
+
 	render() {
-		console.log(this.state.books);
+		const shelves = [
+			{ value: 'currentlyReading', label: 'Currently Reading' },
+			{ value: 'wantToRead', label: 'Want to Read' },
+			{ value: 'read', label: 'Read' },
+		]
+
+		console.log(this.state.books)
+
 		return (
 			<BrowserRouter>
 				<div className="app">
@@ -32,19 +54,18 @@ class BooksApp extends React.Component {
 							</div>
 							<div className="list-books-content">
 								<div>
-									<Shelf
-										shelfTitle={"Currently Reading"}
-									/>
-									<Shelf
-										shelfTitle={"Want to Read"}
-									/>
-									<Shelf
-										shelfTitle={"Read"}
-									/>
+									{shelves.map((shelf) => (
+										<Shelf
+											key={uuidv4()}
+											shelf={shelf}
+											books={this.state.books}
+											bookUpdateShelf={this.bookUpdateShelf}
+										/>
+									))}
 								</div>
 							</div>
 							<div className="open-search">
-								<Link   
+								<Link
 									to='/search'
 								>Add a book</Link>
 							</div>
@@ -52,12 +73,13 @@ class BooksApp extends React.Component {
 					)} />
 
 					<Route path='/search' render={() => (
-						<Search 
+						<Search
 							books={this.state.books}
+							bookUpdateShelf={this.bookUpdateShelf}
 						/>
 					)} />
 				</div>
-			</BrowserRouter>
+			</BrowserRouter >
 		)
 	}
 }

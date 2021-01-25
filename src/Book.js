@@ -1,15 +1,12 @@
 import React, { Component } from 'react'
-import Changer from './Changer';
+import { v4 as uuidv4 } from 'uuid';
+import Changer from './Changer'
 
 class Book extends Component {
-    state = {
-        bookState: []
-    }
-
     render() {
         const { book } = this.props
         const backgroundImage = book.imageLinks.thumbnail
-        
+
         return (
             <li>
                 <div className="book">
@@ -19,14 +16,25 @@ class Book extends Component {
                             height: 193,
                             backgroundImage: `url(${backgroundImage})`
                         }}></div>
-                        <Changer />
+                        <Changer
+                            key={uuidv4()}
+                            book={book}
+                            bookUpdateShelf={this.props.bookUpdateShelf}
+                        />
                     </div>
                     <div className="book-title">{book.title}</div>
-                    <div className="book-authors">{book.authors}</div>
+                    <div className="book-authors">
+                        {book.authors.map((author) => (
+                            <p key={uuidv4()}>{author}</p>
+                        ))}
+                    </div>
                 </div>
             </li>
         )
     }
 }
+
+
+
 
 export default Book
