@@ -1,37 +1,52 @@
 import React, { Component } from 'react'
+import { v4 as uuidv4 } from 'uuid';
 import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
+import * as BooksAPI from './BooksAPI'
 import Book from './Book';
 
 class Search extends Component {
     static propTypes = {
         books: PropTypes.array.isRequired,
+        bookUpdateShelf: PropTypes.func.isRequired,
     }
 
     state = {
         query: '',
+        searchResults: [],
     }
 
-    updateQuery = (query) => {
+    searchBook = (query) => {
         this.setState(() => ({
-            query: query
+            query: query,
         }))
+
+        if (query.length > 0) {
+            BooksAPI.search(query)
+                .then((searchResults) => {
+                    this.setState(() => ({
+                        searchResults
+                    }))
+                })
+
+        } else {
+            this.setState(() => ({
+                searchResults: [],
+            }))
+        }
     }
 
     clearQuery = () => {
         this.updateQuery('')
+        this.setState(() => ({
+            searchResults: [],
+        }))
     }
 
     render() {
-        const { query } = this.state
         const { books } = this.props
-
-        const showingBooks = query === ''
-            ? books
-            : books.filter((b) => (
-                b.title.toLowerCase().includes(query.toLowerCase()) ||
-                b.authors[0].toLowerCase().includes(query.toLowerCase())
-            ))
+        const { query } = this.state
+        const { searchResults } = this.state
 
         return (
             <div className="search-books">
@@ -42,23 +57,27 @@ class Search extends Component {
                     ></Link>
 
                     <div className="search-books-input-wrapper">
-                        <input 
-                            type="text" 
-                            placeholder="Search by title or author" 
+                        <input
+                            type="text"
+                            placeholder="Search by title or author"
                             value={query}
-                            onChange={(event) => this.updateQuery(event.target.value)}
+                            onChange={(event) => this.searchBook(event.target.value)}
                         />
                     </div>
                 </div>
                 <div className="search-books-results">
                     <ol className="books-grid">
-                        {showingBooks.map((book) => (
-                            <Book
-                                key={book.id}
-                                book={book}
-                                bookUpdateShelf={this.props.bookUpdateShelf}
-                            />
-                        ))}
+                        {searchResults.length > 0
+                            ? searchResults.map((book) => (
+                                <Book
+                                    key={uuidv4()}
+                                    book={book}
+                                    books={books}
+                                    bookUpdateShelf={this.props.bookUpdateShelf}
+                                />
+                            ))
+                            : <li>No results</li>
+                        }
                     </ol>
                 </div>
             </div>

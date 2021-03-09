@@ -18,22 +18,39 @@ class BooksApp extends React.Component {
 					books
 				}))
 			})
-
-			console.log("Component Did Mount")
 	}
 
 	bookUpdateShelf = (updatedBook, shelf) => {
-		const bookToUpdate = this.state.books.find(book => book.id === updatedBook.id)
-		bookToUpdate.shelf = shelf
 
-        this.setState(prevState => (
-            prevState.books.map(book => {
-                return book.id === updatedBook.id ? bookToUpdate : book
-            })
-		))
-		
-		BooksAPI.update(updatedBook, shelf)
-    }
+		if (this.state.books.find(book => book.id === updatedBook.id)) {
+			const bookToUpdate = this.state.books.find(book => book.id === updatedBook.id)
+			bookToUpdate.shelf = shelf
+
+			this.setState(prevState => (
+				prevState.books.map(book => {
+					return book.id === updatedBook.id ? bookToUpdate : book
+				})
+			))
+
+			BooksAPI.update(updatedBook, shelf)
+		}
+
+		else {
+			this.setState(prevState => (
+				prevState.books.concat([updatedBook])
+			))
+
+			BooksAPI.update(updatedBook, shelf)
+			BooksAPI.getAll()
+			.then((books) => {
+				this.setState(() => ({
+					books
+				}))
+			})
+		}
+
+
+	}
 
 	render() {
 		const shelves = [
@@ -41,8 +58,6 @@ class BooksApp extends React.Component {
 			{ value: 'wantToRead', label: 'Want to Read' },
 			{ value: 'read', label: 'Read' },
 		]
-
-		console.log(this.state.books)
 
 		return (
 			<BrowserRouter>

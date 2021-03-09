@@ -10,7 +10,27 @@ const options = [
 
 class Changer extends Component {
     state = {
-        shelf: this.props.book.shelf,
+        shelf: ' '
+    }
+
+    componentDidMount() {
+        const selectedBook = this.props.book
+        const { books } = this.props
+
+        if (books.find(book => book.id === selectedBook.id)) {
+            const existingBook = books.find(book => book.id === selectedBook.id)
+            this.setState(() => ({
+                shelf: existingBook.shelf,
+            }))
+
+        }
+
+        else {
+            this.props.book.shelf = 'none'
+            this.setState(() => ({
+                shelf: this.props.book.shelf,
+            }))
+        }
     }
 
     handleChange = (e) => {
@@ -19,6 +39,10 @@ class Changer extends Component {
         const updatedBook = book
 
         const shelf = e.target.value
+
+        this.setState(() => ({
+            shelf: shelf,
+        }))
 
         if (this.props.bookUpdateShelf) {
             this.props.bookUpdateShelf(updatedBook, shelf)

@@ -27,6 +27,7 @@ class Shelf extends Component {
                             <Book
                                 key={uuidv4()}
                                 book={book}
+                                books={books}
                                 bookUpdateShelf={this.props.bookUpdateShelf}
                             />
                         ))}
